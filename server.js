@@ -11,20 +11,16 @@ app.get("/", moviesHandler)
 app.get("/favorite", favoriteHandler)
 app.get("*", notFoundHandler)
 
-
-function Movie(title,genre_ids,original_language,original_title){
+function Movie(title,poster_path,overview){
     this.title = title;
-    this.genre_ids = genre_ids;
-    this.original_language = original_language;
-    this.original_title = original_title;
-
+    this.poster_path = poster_path;
+    this.overview = overview;
 }
 
 function moviesHandler(req,res){
-    return res.status(200).json(movieData);
-    
+    let oneMovie= new Movie(movieData.title, movieData.poster_path, movieData.overview);
+    return res.status(200).json(oneMovie);
 }
-
 
 function favoriteHandler(req,res){
     return res.status(200).send("Welcome to Favorite page");
@@ -33,9 +29,6 @@ function favoriteHandler(req,res){
 function notFoundHandler(req,res){
     return res.status(404).send("page not found error");
 }
-
-
-
 
 app.listen(2000, ()=> {
     console.log("everything is ok");
