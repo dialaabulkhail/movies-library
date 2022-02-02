@@ -12,17 +12,20 @@ const PORT = process.env.PORT;
 
 const app = express();
 app.use(cors());
-app.use(express.json()); //whenever i read from the body(post) we parse it to json format
+app.use(express.json());
 
 const movieData = require("./movie data/data.json");
-// const { json } = require("express");
+const { json } = require("express");
 
 app.get("/", moviesHandler);
 app.get("/favorite", favoriteHandler);
 app.get("/trending", trendingHandler);
 app.get("/search", searchHandler);
 app.post("/addMovie", addMovieHandler);
-// app.get("/getMovies", getMoviesHandler);
+app.get("/getMovies", getMoviesHandler);
+app.put("/update/:id", updateHandler);
+app.delete("/delete/:id", deleteHandler)
+app.get("getMovie/:id", getMoviebyIdHandler)
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
@@ -47,8 +50,8 @@ function moviesHandler(req, res) {
 
 function favoriteHandler(req, res) {
     return res.status(200).send("Welcome to Favorite page");
-
 }
+
 function trendingHandler(req, res) {
     let url = `https://api.themoviedb.org/3/trending/all/week?api_key=${process.env.APIKEY}&language=en-US`;
     axios.get(url)
@@ -56,7 +59,7 @@ function trendingHandler(req, res) {
             let trending = data.data.results.map(trend => {
                 return new Trend(trend.id, trend.title, trend.release_date, trend.poster_path, trend.overview)
             });
-            res.status(200).json(trending);
+            res.status(200).send(trending);
         }).catch((error) => {  
             errorHandler(error,req,res);
         })
@@ -70,39 +73,64 @@ function searchHandler(req, res) {
             let trending = data.data.results.map(trend => {
                 return new Trend(trend.id, trend.title, trend.release_date, trend.poster_path, trend.overview)
             })
-            res.status(200).json(trending)
+            res.status(200).send(trending)
         }).catch(error => {
             errorHandler(error, req,res);
         })
 }
 
-// function addMovieHandler(req, res) {
-//     const movie = req.body
-//     let sql = `INSERT INTO addmovie (title, release_date, poster_path, overview) VALUES ($1,$2,$3,$4) RETURNING *;`
-//     let values = [movie.title, movie.release_date, movie.poster_path, movie.overview];
-//     console.log(values);
-//     client.query(sql, values).then(data => { 
-//         res.status(200).json(data); 
-//     }).catch(error => {
-//         errorHandler(error,req,res)
-//     });
-// }
-async function addMovieHandler(req,res){    
- const {title ,release_date, poster_path ,overview}=req.body;   
-   let sql = 'INSERT INTO addmovie (title, release_date, poster_path, overview) VALUES ($1, $2, $3, $4)';  
-    let safeValues = [title, release_date, poster_path, overview ];   
-        let result = await client.query(sql, safeValues);  
-    res.send(result); }
+function addMovieHandler(req, res) {
+    const movie = req.body
+    let sql = `INSERT INTO addmovie (title, release_date, poster_path, overview) VALUES ($1,$2,$3,$4) RETURNING *;`
+    let values = [movie.title || " ", movie.release_date || " ", movie.poster_path || " ", movie.overview || " "];
+    console.log(values);
+    client.query(sql, values).then(data => { 
+        res.status(200).json(data.rows); 
+    }).catch(error => {
+        errorHandler(error,req,res)
+    });
+}
 
+function getMoviesHandler(req,res){
+    let sql = `SELECT * FROM addMovie;`;
+    client.query(sql).then(data=>{
+            res.status(200).json(data.rows);  
+            }).catch(error=>{
+                errorHandler(error,req,res)
+            });
+}
 
-// function getMoviesHandler(req,res){
-//     let sql = `SELECT * FROM addMovie;`;
-//     client.query(sql).then(data=>{
-//             res.status(200).json(data.rows);  
-//             }).catch(error=>{
-//                 errorHandler(error,req,res)
-//             });
-// }
+function updateHandler(req,res){
+const id = req.parmas.id;
+const movie = req.body;
+let sql = `UPDATE addmovie SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id=$1; RETURNNIG *;`;
+let values = [movie.title, movie.release_date, movie.poster_path, movie.overview, id];
+client.query(sql, values).then(data=>{
+res.status(200).json(data.rows);
+}).catch(error=>{
+    errorHandler(error,req,res)
+});
+}
+
+function deleteHandler(req,res){
+    const id = req.params.id;
+    const sql = `DELETE FROM addmovie WHERE id=${id};`
+    client.query(sql).then(()=>{
+        res.status(204).json({});
+    }).catch(error=>{
+        errorHandler(error,req,res)
+    });
+}
+
+function getMoviebyIdHandler(req,res){
+    let sql = `SELECT * FROM addMovie WHERE id=${req.params.id};`;
+        client.query(sql).then(data=>{
+                res.status(200).json(data.rows);  
+                }).catch(error=>{
+                    errorHandler(error,req,res)
+                });
+    
+}
 
 function notFoundHandler(req, res) {
     return res.status(404).send("page not found error");
