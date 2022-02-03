@@ -149,6 +149,7 @@ const client = new pg.Client({
     ssl: { rejectUnauthorized: false }
 })
 
+
 // client.connect().then(() => {
 //     app.listen(PORT, () => {
 //         console.log(`listening to port ${PORT}`);
