@@ -144,13 +144,14 @@ function errorHandler(error,req,res) {
     res.status(500).send(err)
 }
 
-const client = new pg.Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-})
-
-// client.connect().then(() => {
-//     app.listen(PORT, () => {
-//         console.log(`listening to port ${PORT}`);
-//     })
+// const client = new pg.Client({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: { rejectUnauthorized: false }
 // })
+
+
+client.connect().then(() => {
+    app.listen(PORT, () => {
+        console.log(`listening to port ${PORT}`);
+    })
+})
