@@ -25,7 +25,7 @@ app.post("/addMovie", addMovieHandler);
 app.get("/getMovies", getMoviesHandler);
 app.put("/update/:id", updateHandler);
 app.delete("/delete/:id", deleteHandler)
-app.get("getMovie/:id", getMoviebyIdHandler)
+app.get("/getMovie/:id", getMoviebyIdHandler)
 app.use("*", notFoundHandler);
 app.use(errorHandler);
 
@@ -82,7 +82,7 @@ function searchHandler(req, res) {
 function addMovieHandler(req, res) {
     const movie = req.body
     let sql = `INSERT INTO addmovie (title, release_date, poster_path, overview) VALUES ($1,$2,$3,$4) RETURNING *;`
-    let values = [movie.title || " ", movie.release_date || " ", movie.poster_path || " ", movie.overview || " "];
+    let values = [movie.title, movie.release_date, movie.poster_path, movie.overview];
     console.log(values);
     client.query(sql, values).then(data => { 
         res.status(200).json(data.rows); 
@@ -101,9 +101,9 @@ function getMoviesHandler(req,res){
 }
 
 function updateHandler(req,res){
-const id = req.parmas.id;
+const id = req.params.id;
 const movie = req.body;
-let sql = `UPDATE addmovie SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id=$1; RETURNNIG *;`;
+let sql = `UPDATE addmovie SET title=$1, release_date=$2, poster_path=$3, overview=$4 WHERE id=$5 RETURNING *;`
 let values = [movie.title, movie.release_date, movie.poster_path, movie.overview, id];
 client.query(sql, values).then(data=>{
 res.status(200).json(data.rows);
@@ -123,7 +123,7 @@ function deleteHandler(req,res){
 }
 
 function getMoviebyIdHandler(req,res){
-    let sql = `SELECT * FROM addMovie WHERE id=${req.params.id};`;
+    let sql = `SELECT * FROM addmovie WHERE id=${req.params.id};`;
         client.query(sql).then(data=>{
                 res.status(200).json(data.rows);  
                 }).catch(error=>{

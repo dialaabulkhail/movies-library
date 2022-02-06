@@ -3,13 +3,11 @@
 **Author Name** : Diala Abul-Khail
 
 ##WRRC
-
+![](./cycle.jpeg);
 
 ##Overview
 
 ##Getting started
-**task12
-
 
 
 
