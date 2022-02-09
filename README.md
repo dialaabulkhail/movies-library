@@ -15,6 +15,7 @@ A Movie webpage that provides variety of trending movies.
 ## Project features
 this webpage has many features like trending, addMovies and favorite pages which can make you save and get you your favorite and latest movies, it also has the search page to help you easily find what you're looking for.. there are also other pages that provides deleting and updating data and of coarse the features of getting items and adding items by the id number of the movie.
 
+
 ## Getting started
  first after initializing npm, we downloaded npm packages: dotenv, cors,axios,express and pg,,, after installing npm 
 
