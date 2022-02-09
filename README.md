@@ -8,6 +8,7 @@
 
 
 
+
 ## Overview
 
 A Movie webpage that provides variety of trending movies.
@@ -56,7 +57,4 @@ this webpage has many features like trending, addMovies and favorite pages which
 19- downloaded a postgres resource 
 
 20- copied the API to the configures 21- linked it to the repository in github and then deployed it 22- got the url for the code/database
-
-
-
 
